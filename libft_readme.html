@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>libft — Standard C Library · moelgham</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:      #0b0d12;
+  --bg2:     #10131a;
+  --bg3:     #161922;
+  --bg4:     #1c2030;
+  --border:  #222636;
+  --border2: #2d3248;
+  --txt:     #b8bdd0;
+  --txt2:    #7a8098;
+  --head:    #e8ecf5;
+  --green:   #34d47a;  --green-bg: #0a2218; --green-bd: #163a28;
+  --blue:    #5b9cf6;  --blue-bg:  #0a1428; --blue-bd:  #142444;
+  --amber:   #f5a623;  --amber-bg: #1e1204; --amber-bd: #362008;
+  --coral:   #f06060;  --coral-bg: #200a0a; --coral-bd: #3a1010;
+  --purple:  #a78bfa;  --purple-bg:#120a28; --purple-bd:#201048;
+  --teal:    #2dd4bf;  --teal-bg:  #041614; --teal-bd:  #083028;
+}
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--txt);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13.5px;
+  line-height: 1.8;
+  min-height: 100vh;
+}
+body::after {
+  content:'';
+  position:fixed; inset:0; pointer-events:none; z-index:999;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.025) 2px, rgba(0,0,0,0.025) 4px);
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 72px 36px 120px; }
+
+/* HERO */
+.hero { margin-bottom: 80px; }
+.ascii-art {
+  font-size: 10.5px; line-height: 1.25; color: var(--green);
+  text-shadow: 0 0 28px rgba(52,212,122,0.22);
+  margin-bottom: 32px; overflow-x: auto; white-space: pre;
+}
+.hero-tagline {
+  font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 400;
+  color: var(--txt2); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 10px;
+}
+.hero-byline { font-size: 12px; color: var(--txt2); margin-bottom: 28px; font-style: italic; }
+.hero-byline span { color: var(--green); font-style: normal; font-weight: 500; }
+.pills { display:flex; flex-wrap:wrap; gap:8px; }
+.pill {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.06em;
+  padding: 4px 14px; border-radius: 20px; border: 1px solid; white-space: nowrap;
+}
+.pill-g { background:var(--green-bg);  color:var(--green);  border-color:var(--green-bd); }
+.pill-b { background:var(--blue-bg);   color:var(--blue);   border-color:var(--blue-bd); }
+.pill-a { background:var(--amber-bg);  color:var(--amber);  border-color:var(--amber-bd); }
+.pill-p { background:var(--purple-bg); color:var(--purple); border-color:var(--purple-bd); }
+.pill-c { background:var(--coral-bg);  color:var(--coral);  border-color:var(--coral-bd); }
+.pill-t { background:var(--teal-bg);   color:var(--teal);   border-color:var(--teal-bd); }
+
+/* SECTIONS */
+.sec { margin-bottom: 72px; }
+.sec-num { font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--txt2); margin-bottom: 6px; }
+h2 {
+  font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800;
+  color: var(--head); margin-bottom: 8px;
+  display:flex; align-items:center; gap:10px;
+}
+.hl { flex:1; height:1px; background: linear-gradient(90deg, var(--border2), transparent); margin-left:8px; }
+.sec-intro { color: var(--txt2); font-size: 13px; margin-bottom: 28px; max-width: 680px; }
+h3 {
+  font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700;
+  color: var(--head); margin: 36px 0 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+h3::before { content:''; display:inline-block; width:3px; height:16px; background:var(--green); border-radius:2px; }
+p { color:var(--txt); max-width:680px; margin-bottom:14px; }
+
+/* CARDS */
+.cards { display:grid; grid-template-columns:repeat(auto-fill, minmax(200px,1fr)); gap:14px; margin:20px 0; }
+.card {
+  background: var(--bg2); border:1px solid var(--border); border-radius:10px;
+  padding:20px 18px; position:relative; overflow:hidden;
+  transition: border-color .2s, transform .2s;
+}
+.card:hover { border-color:var(--border2); transform:translateY(-3px); }
+.card-stripe { position:absolute; top:0; left:0; right:0; height:3px; border-radius:10px 10px 0 0; }
+.card h4 { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; color:var(--head); margin-bottom:6px; }
+.card p { font-size:12px; color:var(--txt2); line-height:1.6; max-width:none; margin:0; }
+.card-dot { font-size:18px; margin-bottom:10px; display:block; }
+
+/* FUNCTION TABLE */
+.ftable { width:100%; border-collapse:collapse; margin:16px 0; border-radius:10px; overflow:hidden; border:1px solid var(--border); }
+.ftable thead { background:var(--bg3); }
+.ftable th { padding:10px 16px; font-size:10px; text-transform:uppercase; letter-spacing:0.18em; color:var(--txt2); text-align:left; border-bottom:1px solid var(--border); }
+.ftable td { padding:10px 16px; border-bottom:1px solid var(--bg3); font-size:12.5px; vertical-align:top; }
+.ftable tr:last-child td { border:none; }
+.ftable tr:hover td { background:var(--bg3); }
+.fn { color:var(--amber); font-weight:500; white-space:nowrap; }
+.fp { font-size:11.5px; color:var(--blue); }
+.fd2 { color:var(--txt); }
+.bonus-badge {
+  font-size:10px; padding:2px 8px; border-radius:3px; margin-left:6px;
+  background:var(--purple-bg); color:var(--purple); border:1px solid var(--purple-bd); white-space:nowrap;
+}
+
+/* TERMINAL */
+.term { background:var(--bg2); border:1px solid var(--border); border-radius:12px; overflow:hidden; margin:20px 0; }
+.term-bar {
+  background:var(--bg3); border-bottom:1px solid var(--border);
+  padding:10px 16px; display:flex; align-items:center; gap:7px;
+}
+.tb { width:11px; height:11px; border-radius:50%; }
+.tb-r{background:#f06060;} .tb-a{background:#f5a623;} .tb-g{background:#34d47a;}
+.term-title { font-size:11px; color:var(--txt2); margin-left:6px; letter-spacing:0.08em; }
+.term pre { padding:22px 26px; font-size:12px; line-height:2; overflow-x:auto; color:var(--txt); }
+.g{color:var(--green);} .b{color:var(--blue);} .a{color:var(--amber);}
+.c{color:var(--coral);} .p{color:var(--purple);} .t{color:var(--teal);}
+.m{color:var(--txt2);} .w{color:var(--head);font-weight:500;}
+
+/* CODE BLOCKS */
+.cb {
+  background:var(--bg2); border:1px solid var(--border); border-radius:8px;
+  padding:18px 22px; margin:14px 0; font-size:13px; line-height:2; overflow-x:auto;
+}
+.pr{color:var(--green);user-select:none;}
+.cm{color:var(--head);} .ca{color:var(--blue);} .co{color:var(--txt2);}
+
+/* FILE TREE */
+.ftree {
+  background:var(--bg2); border:1px solid var(--border); border-radius:10px;
+  padding:24px 28px; font-size:12.5px; line-height:2.2;
+}
+.fdir{color:var(--blue);} .ff{color:var(--txt);} .fs{color:var(--border2);}
+.fmm{color:var(--txt2);} .fh{color:var(--green);font-weight:500;}
+
+/* FOOTER */
+.foot {
+  margin-top:100px; padding-top:32px; border-top:1px solid var(--border);
+  display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;
+}
+.foot-l { font-size:12px; color:var(--txt2); }
+.foot-l strong { color:var(--green); }
+.foot-r { font-size:11px; color:var(--txt2); letter-spacing:0.06em; }
+
+@keyframes up { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:none} }
+.hero{animation:up .5s ease both;}
+.sec{animation:up .5s ease both;}
+.sec:nth-child(2){animation-delay:.06s}
+.sec:nth-child(3){animation-delay:.12s}
+.sec:nth-child(4){animation-delay:.18s}
+.sec:nth-child(5){animation-delay:.22s}
+.sec:nth-child(6){animation-delay:.26s}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HERO -->
+<header class="hero">
+<div class="ascii-art"> ██╗     ██╗██████╗ ███████╗████████╗
+ ██║     ██║██╔══██╗██╔════╝╚══██╔══╝
+ ██║     ██║██████╔╝█████╗     ██║
+ ██║     ██║██╔══██╗██╔══╝     ██║
+ ███████╗██║██████╔╝██║        ██║
+ ╚══════╝╚═╝╚═════╝ ╚═╝        ╚═╝</div>
+<div class="hero-tagline">Your own standard C library &mdash; 42 School Project</div>
+<div class="hero-byline"><em>Written from scratch as part of the 42 curriculum by <span>moelgham</span>.</em></div>
+<div class="pills">
+  <span class="pill pill-g">C99</span>
+  <span class="pill pill-b">no external libs</span>
+  <span class="pill pill-a">static library (.a)</span>
+  <span class="pill pill-p">bonus: linked lists</span>
+  <span class="pill pill-t">norm compliant</span>
+</div>
+</header>
+
+<!-- 01 -->
+<section class="sec">
+<div class="sec-num">01 &mdash; description</div>
+<h2>What is this? <span class="hl"></span></h2>
+<p class="sec-intro">The very first project at 42. Before you use a function, you write it.</p>
+<p>libft is a hand-rolled implementation of the most common functions from <strong style="color:var(--head)">libc</strong> — string manipulation, memory operations, character checks — plus a set of utility functions not in the standard library at all.</p>
+<p>The result is a <strong style="color:var(--head)">.a static library</strong> you link into every project that follows. It grows with you: add functions as you need them. By the time you finish 42, libft is yours.</p>
+<p style="margin-top:8px;">The rule that makes it interesting: <strong style="color:var(--head)">no #include &lt;string.h&gt;, no shortcuts, no calling the real functions</strong>. Every byte, every loop, written by hand.</p>
+<div class="cards" style="margin-top:28px;">
+  <div class="card">
+    <div class="card-stripe" style="background:var(--green)"></div>
+    <span class="card-dot">◈</span>
+    <h4>Part 1 — libc</h4>
+    <p>Re-implementations of standard C functions. Same signature, same behavior.</p>
+  </div>
+  <div class="card">
+    <div class="card-stripe" style="background:var(--blue)"></div>
+    <span class="card-dot">◈</span>
+    <h4>Part 2 — extra utils</h4>
+    <p>Functions not in libc but useful everywhere: ft_split, ft_itoa, ft_substr…</p>
+  </div>
+  <div class="card">
+    <div class="card-stripe" style="background:var(--purple)"></div>
+    <span class="card-dot">◈</span>
+    <h4>Bonus — linked lists</h4>
+    <p>Full singly-linked list API: new, add, delete, iterate, map, clear.</p>
+  </div>
+  <div class="card">
+    <div class="card-stripe" style="background:var(--amber)"></div>
+    <span class="card-dot">◈</span>
+    <h4>Static library</h4>
+    <p>Compiled into libft.a. Link with -L. -lft in every future project.</p>
+  </div>
+</div>
+</section>
+
+<!-- 02 -->
+<section class="sec">
+<div class="sec-num">02 &mdash; functions</div>
+<h2>Function reference <span class="hl"></span></h2>
+<p class="sec-intro">Every function listed — what it takes, what it returns, what it does.</p>
+
+<h3>Character checks &amp; conversions</h3>
+<table class="ftable">
+<thead><tr><th>function</th><th>prototype</th><th>what it does</th></tr></thead>
+<tbody>
+<tr><td class="fn">ft_isalpha</td><td class="fp">int (int c)</td><td class="fd2">Returns non-zero if c is a letter (a–z or A–Z).</td></tr>
+<tr><td class="fn">ft_isdigit</td><td class="fp">int (int c)</td><td class="fd2">Returns non-zero if c is a decimal digit (0–9).</td></tr>
+<tr><td class="fn">ft_isalnum</td><td class="fp">int (int c)</td><td class="fd2">Returns non-zero if c is alphanumeric.</td></tr>
+<tr><td class="fn">ft_isascii</td><td class="fp">int (int c)</td><td class="fd2">Returns non-zero if c fits in 7-bit ASCII (0–127).</td></tr>
+<tr><td class="fn">ft_isprint</td><td class="fp">int (int c)</td><td class="fd2">Returns non-zero if c is a printable character.</td></tr>
+<tr><td class="fn">ft_toupper</td><td class="fp">int (int c)</td><td class="fd2">Converts lowercase letter to uppercase. Others unchanged.</td></tr>
+<tr><td class="fn">ft_tolower</td><td class="fp">int (int c)</td><td class="fd2">Converts uppercase letter to lowercase. Others unchanged.</td></tr>
+</tbody>
+</table>
+
+<h3>String functions</h3>
+<table class="ftable">
+<thead><tr><th>function</th><th>prototype</th><th>what it does</th></tr></thead>
+<tbody>
+<tr><td class="fn">ft_strlen</td><td class="fp">size_t (const char *s)</td><td class="fd2">Returns length of s, not counting the terminating '\0'.</td></tr>
+<tr><td class="fn">ft_strlcpy</td><td class="fp">size_t (char *dst, const char *src, size_t sz)</td><td class="fd2">Copies up to sz-1 chars into dst, always NUL-terminates. Returns strlen(src).</td></tr>
+<tr><td class="fn">ft_strlcat</td><td class="fp">size_t (char *dst, const char *src, size_t sz)</td><td class="fd2">Appends src to dst, truncating at sz-1. Returns combined length.</td></tr>
+<tr><td class="fn">ft_strchr</td><td class="fp">char *(const char *s, int c)</td><td class="fd2">Finds first occurrence of c in s. Returns pointer or NULL.</td></tr>
+<tr><td class="fn">ft_strrchr</td><td class="fp">char *(const char *s, int c)</td><td class="fd2">Finds last occurrence of c in s.</td></tr>
+<tr><td class="fn">ft_strncmp</td><td class="fp">int (const char *s1, const char *s2, size_t n)</td><td class="fd2">Compares up to n bytes of s1 and s2. Returns difference.</td></tr>
+<tr><td class="fn">ft_strnstr</td><td class="fp">char *(const char *h, const char *n, size_t len)</td><td class="fd2">Finds needle in haystack within first len bytes.</td></tr>
+<tr><td class="fn">ft_strdup</td><td class="fp">char *(const char *s)</td><td class="fd2">Allocates and returns a duplicate of s. Caller frees.</td></tr>
+</tbody>
+</table>
+
+<h3>Memory functions</h3>
+<table class="ftable">
+<thead><tr><th>function</th><th>prototype</th><th>what it does</th></tr></thead>
+<tbody>
+<tr><td class="fn">ft_memset</td><td class="fp">void *(void *s, int c, size_t n)</td><td class="fd2">Fills n bytes at s with byte value c. Returns s.</td></tr>
+<tr><td class="fn">ft_bzero</td><td class="fp">void (void *s, size_t n)</td><td class="fd2">Zeroes n bytes at s. Equivalent to memset(s, 0, n).</td></tr>
+<tr><td class="fn">ft_memcpy</td><td class="fp">void *(void *dst, const void *src, size_t n)</td><td class="fd2">Copies n bytes from src to dst. Undefined on overlap.</td></tr>
+<tr><td class="fn">ft_memmove</td><td class="fp">void *(void *dst, const void *src, size_t n)</td><td class="fd2">Like memcpy but safe when src and dst overlap.</td></tr>
+<tr><td class="fn">ft_memchr</td><td class="fp">void *(const void *s, int c, size_t n)</td><td class="fd2">Finds first byte equal to c within n bytes of s.</td></tr>
+<tr><td class="fn">ft_memcmp</td><td class="fp">int (const void *s1, const void *s2, size_t n)</td><td class="fd2">Compares n bytes of s1 and s2. Returns first difference.</td></tr>
+<tr><td class="fn">ft_calloc</td><td class="fp">void *(size_t count, size_t size)</td><td class="fd2">Allocates count×size bytes, zeroed. Caller frees.</td></tr>
+</tbody>
+</table>
+
+<h3>Conversion</h3>
+<table class="ftable">
+<thead><tr><th>function</th><th>prototype</th><th>what it does</th></tr></thead>
+<tbody>
+<tr><td class="fn">ft_atoi</td><td class="fp">int (const char *str)</td><td class="fd2">Parses leading whitespace + optional sign + digits. Returns int.</td></tr>
+</tbody>
+</table>
+
+<h3>Additional utility functions (Part 2)</h3>
+<table class="ftable">
+<thead><tr><th>function</th><th>prototype</th><th>what it does</th></tr></thead>
+<tbody>
+<tr><td class="fn">ft_substr</td><td class="fp">char *(const char *s, unsigned int start, size_t len)</td><td class="fd2">Allocates substring of s starting at start, up to len chars.</td></tr>
+<tr><td class="fn">ft_strjoin</td><td class="fp">char *(const char *s1, const char *s2)</td><td class="fd2">Allocates and returns s1 + s2 concatenated.</td></tr>
+<tr><td class="fn">ft_strtrim</td><td class="fp">char *(const char *s1, const char *set)</td><td class="fd2">Returns copy of s1 with all chars in set stripped from both ends.</td></tr>
+<tr><td class="fn">ft_split</td><td class="fp">char **(const char *s, char c)</td><td class="fd2">Splits s by delimiter c. Returns NULL-terminated array of strings.</td></tr>
+<tr><td class="fn">ft_itoa</td><td class="fp">char *(int n)</td><td class="fd2">Converts integer to its string representation. Handles INT_MIN.</td></tr>
+<tr><td class="fn">ft_strmapi</td><td class="fp">char *(const char *s, char (*f)(unsigned int, char))</td><td class="fd2">Applies f to each char, returns new string with results.</td></tr>
+<tr><td class="fn">ft_striteri</td><td class="fp">void (char *s, void (*f)(unsigned int, char*))</td><td class="fd2">Applies f to each char of s in place, passing index.</td></tr>
+<tr><td class="fn">ft_putchar_fd</td><td class="fp">void (char c, int fd)</td><td class="fd2">Writes char c to file descriptor fd.</td></tr>
+<tr><td class="fn">ft_putstr_fd</td><td class="fp">void (char *s, int fd)</td><td class="fd2">Writes string s to fd.</td></tr>
+<tr><td class="fn">ft_putendl_fd</td><td class="fp">void (char *s, int fd)</td><td class="fd2">Writes string s followed by newline to fd.</td></tr>
+<tr><td class="fn">ft_putnbr_fd</td><td class="fp">void (int n, int fd)</td><td class="fd2">Writes integer n as string to fd.</td></tr>
+</tbody>
+</table>
+
+<h3>Bonus — linked list API</h3>
+<table class="ftable">
+<thead><tr><th>function</th><th>prototype</th><th>what it does</th></tr></thead>
+<tbody>
+<tr><td class="fn">ft_lstnew<span class="bonus-badge">bonus</span></td><td class="fp">t_list *(void *content)</td><td class="fd2">Allocates new list node with given content. next = NULL.</td></tr>
+<tr><td class="fn">ft_lstadd_front<span class="bonus-badge">bonus</span></td><td class="fp">void (t_list **lst, t_list *new)</td><td class="fd2">Prepends new to the front of lst.</td></tr>
+<tr><td class="fn">ft_lstsize<span class="bonus-badge">bonus</span></td><td class="fp">int (t_list *lst)</td><td class="fd2">Returns the number of nodes in the list.</td></tr>
+<tr><td class="fn">ft_lstlast<span class="bonus-badge">bonus</span></td><td class="fp">t_list *(t_list *lst)</td><td class="fd2">Returns the last node of the list.</td></tr>
+<tr><td class="fn">ft_lstadd_back<span class="bonus-badge">bonus</span></td><td class="fp">void (t_list **lst, t_list *new)</td><td class="fd2">Appends new to the end of lst.</td></tr>
+<tr><td class="fn">ft_lstdelone<span class="bonus-badge">bonus</span></td><td class="fp">void (t_list *lst, void (*del)(void*))</td><td class="fd2">Frees one node using del for content. Does not free next.</td></tr>
+<tr><td class="fn">ft_lstclear<span class="bonus-badge">bonus</span></td><td class="fp">void (t_list **lst, void (*del)(void*))</td><td class="fd2">Frees all nodes from lst onward using del.</td></tr>
+<tr><td class="fn">ft_lstiter<span class="bonus-badge">bonus</span></td><td class="fp">void (t_list *lst, void (*f)(void*))</td><td class="fd2">Applies f to the content of every node.</td></tr>
+<tr><td class="fn">ft_lstmap<span class="bonus-badge">bonus</span></td><td class="fp">t_list *(t_list *lst, void *(*f)(void*), void (*del)(void*))</td><td class="fd2">Applies f to each node content, builds new list. Cleans up on failure.</td></tr>
+</tbody>
+</table>
+</section>
+
+<!-- 03 -->
+<section class="sec">
+<div class="sec-num">03 &mdash; architecture</div>
+<h2>How it works <span class="hl"></span></h2>
+<p class="sec-intro">One Makefile, one archive. Every future project just links it in.</p>
+
+<h3>The build pipeline</h3>
+<div class="term">
+  <div class="term-bar"><span class="tb tb-r"></span><span class="tb tb-a"></span><span class="tb tb-g"></span><span class="term-title">build.diagram</span></div>
+  <pre>  <span class="m">// each .c gets compiled into a .o</span>
+
+  <span class="b">ft_strlen.c</span>  ──► <span class="g">cc -Wall -Wextra -Werror -c</span> ──► <span class="a">ft_strlen.o</span>
+  <span class="b">ft_memset.c</span>  ──► <span class="g">cc -Wall -Wextra -Werror -c</span> ──► <span class="a">ft_memset.o</span>
+  <span class="b">ft_split.c</span>   ──► <span class="g">cc -Wall -Wextra -Werror -c</span> ──► <span class="a">ft_split.o</span>
+  <span class="b">ft_lstnew.c</span>  ──► <span class="g">cc -Wall -Wextra -Werror -c</span> ──► <span class="a">ft_lstnew.o</span>
+       ⋮                                                    ⋮
+       │                                                    │
+       └──────────────────────────────────────────────────┘
+                            │
+                            ▼
+                  <span class="g">ar rcs libft.a</span> <span class="a">*.o</span>
+                            │
+                            ▼
+                       <span class="t">libft.a</span>   <span class="m">← link this into any future project</span></pre>
+</div>
+
+<h3>Using libft in another project</h3>
+<div class="term">
+  <div class="term-bar"><span class="tb tb-r"></span><span class="tb tb-a"></span><span class="tb tb-g"></span><span class="term-title">linking.diagram</span></div>
+  <pre>  <span class="m"># your future project's Makefile</span>
+
+  <span class="b">LIBFT_PATH</span>  = <span class="a">../libft</span>
+  <span class="b">LIBS</span>        = <span class="a">-L$(LIBFT_PATH) -lft</span>
+
+  <span class="g">$(NAME)</span>: $(OBJS)
+      <span class="g">make -C</span> <span class="a">$(LIBFT_PATH)</span>
+      <span class="g">cc</span> $(OBJS) <span class="a">$(LIBS)</span> -o $(NAME)
+
+  <span class="m"># in any .c file</span>
+  <span class="p">#include</span> <span class="t">"libft.h"</span>
+
+  <span class="b">ft_putstr_fd</span>(<span class="a">"hello\n"</span>, 1);   <span class="m">// works</span>
+  <span class="b">ft_split</span>(<span class="a">"a:b:c"</span>, <span class="a">':'</span>);       <span class="m">// works</span>
+  <span class="b">ft_itoa</span>(<span class="a">42</span>);                  <span class="m">// works</span></pre>
+</div>
+
+<h3>The t_list struct (bonus)</h3>
+<div class="term">
+  <div class="term-bar"><span class="tb tb-r"></span><span class="tb tb-a"></span><span class="tb tb-g"></span><span class="term-title">t_list.h</span></div>
+  <pre>  <span class="p">typedef</span> <span class="w">struct</span> s_list
+  {
+      <span class="b">void</span>          <span class="a">*content</span>;   <span class="m">// any data — you decide the type</span>
+      <span class="p">struct</span> s_list <span class="a">*next</span>;     <span class="m">// pointer to the next node, NULL if last</span>
+  }   <span class="g">t_list</span>;
+
+  <span class="m">// example: building a list</span>
+  <span class="g">t_list</span> <span class="a">*head</span> = <span class="b">ft_lstnew</span>(<span class="a">"first"</span>);
+  <span class="b">ft_lstadd_back</span>(&amp;<span class="a">head</span>, <span class="b">ft_lstnew</span>(<span class="a">"second"</span>));
+  <span class="b">ft_lstadd_back</span>(&amp;<span class="a">head</span>, <span class="b">ft_lstnew</span>(<span class="a">"third"</span>));
+  <span class="m">// head → "first" → "second" → "third" → NULL</span>
+  <span class="b">ft_lstclear</span>(&amp;<span class="a">head</span>, free);   <span class="m">// clean up</span></pre>
+</div>
+</section>
+
+<!-- 04 -->
+<section class="sec">
+<div class="sec-num">04 &mdash; instructions</div>
+<h2>Getting started <span class="hl"></span></h2>
+<p class="sec-intro">Clone, make, link. Nothing more.</p>
+
+<h3>Build</h3>
+<div class="cb">
+  <div><span class="pr">$</span> <span class="cm">git clone</span> <span class="ca">https://github.com/mostafaloka/libft.git</span></div>
+  <div><span class="pr">$</span> <span class="cm">cd</span> <span class="ca">libft</span></div>
+  <div><span class="pr">$</span> <span class="cm">make</span>            <span class="co"># compiles libft.a (Part 1 + Part 2)</span></div>
+  <div><span class="pr">$</span> <span class="cm">make bonus</span>      <span class="co"># also compiles bonus linked-list functions</span></div>
+</div>
+
+<h3>Makefile targets</h3>
+<div class="cb">
+  <div><span class="pr">$</span> <span class="cm">make</span>         <span class="co"># build libft.a</span></div>
+  <div><span class="pr">$</span> <span class="cm">make bonus</span>   <span class="co"># build libft.a including bonus functions</span></div>
+  <div><span class="pr">$</span> <span class="cm">make clean</span>   <span class="co"># remove .o files</span></div>
+  <div><span class="pr">$</span> <span class="cm">make fclean</span>  <span class="co"># remove .o files + libft.a</span></div>
+  <div><span class="pr">$</span> <span class="cm">make re</span>      <span class="co"># fclean then make</span></div>
+</div>
+
+<h3>Quick test with a main</h3>
+<div class="cb">
+  <div><span class="co">// test.c</span></div>
+  <div><span class="ca">#include "libft.h"</span></div>
+  <div><span class="ca">#include &lt;stdio.h&gt;</span></div>
+  <div>&nbsp;</div>
+  <div><span class="cm">int main</span>(<span class="ca">void</span>)</div>
+  <div>{</div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">printf</span>(<span class="ca">"%zu\n"</span>, <span class="cm">ft_strlen</span>(<span class="ca">"hello"</span>));         <span class="co">// 5</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">printf</span>(<span class="ca">"%s\n"</span>,  <span class="cm">ft_itoa</span>(<span class="ca">-2147483648</span>));      <span class="co">// -2147483648</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">char **arr</span> = <span class="cm">ft_split</span>(<span class="ca">"a:b:c"</span>, <span class="ca">':'</span>);</div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">printf</span>(<span class="ca">"%s %s %s\n"</span>, arr[0], arr[1], arr[2]); <span class="co">// a b c</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">return</span> (<span class="ca">0</span>);</div>
+  <div>}</div>
+  <div>&nbsp;</div>
+  <div><span class="pr">$</span> <span class="cm">cc test.c</span> <span class="ca">-L. -lft</span> <span class="cm">-o test &amp;&amp; ./test</span></div>
+</div>
+</section>
+
+<!-- 05 -->
+<section class="sec">
+<div class="sec-num">05 &mdash; structure</div>
+<h2>Code layout <span class="hl"></span></h2>
+<p class="sec-intro">One file per function. One header. One Makefile. Simple.</p>
+<div class="ftree">
+  <div><span class="fdir">libft/</span></div>
+  <div><span class="fs">│</span></div>
+  <div><span class="fs">├── </span><span class="fh">libft.h</span>               <span class="fmm">→  all prototypes + t_list typedef</span></div>
+  <div><span class="fs">├── </span><span class="fh">Makefile</span>              <span class="fmm">→  make / bonus / clean / fclean / re</span></div>
+  <div><span class="fs">│</span></div>
+  <div><span class="fs">├── </span><span class="ff">ft_is*.c</span>              <span class="fmm">→  isalpha, isdigit, isalnum, isascii, isprint</span></div>
+  <div><span class="fs">├── </span><span class="ff">ft_to*.c</span>              <span class="fmm">→  toupper, tolower</span></div>
+  <div><span class="fs">│</span></div>
+  <div><span class="fs">├── </span><span class="ff">ft_str*.c</span>             <span class="fmm">→  strlen, strlcpy, strlcat, strchr, strrchr,</span></div>
+  <div><span class="fs">│                           </span><span class="fmm">   strncmp, strnstr, strdup, strmapi, striteri</span></div>
+  <div><span class="fs">│</span></div>
+  <div><span class="fs">├── </span><span class="ff">ft_mem*.c</span>             <span class="fmm">→  memset, bzero, memcpy, memmove, memchr, memcmp</span></div>
+  <div><span class="fs">│</span></div>
+  <div><span class="fs">├── </span><span class="ff">ft_calloc.c</span>           <span class="fmm">→  calloc — malloc + bzero</span></div>
+  <div><span class="fs">├── </span><span class="ff">ft_atoi.c</span>             <span class="fmm">→  string to int conversion</span></div>
+  <div><span class="fs">│</span></div>
+  <div><span class="fs">├── </span><span class="ff">ft_substr.c</span>           <span class="fmm">→  allocate a substring</span></div>
+  <div><span class="fs">├── </span><span class="ff">ft_strjoin.c</span>          <span class="fmm">→  concatenate two strings into a new allocation</span></div>
+  <div><span class="fs">├── </span><span class="ff">ft_strtrim.c</span>          <span class="fmm">→  strip chars from both ends</span></div>
+  <div><span class="fs">├── </span><span class="ff">ft_split.c</span>            <span class="fmm">→  split by delimiter → NULL-terminated array</span></div>
+  <div><span class="fs">├── </span><span class="ff">ft_itoa.c</span>             <span class="fmm">→  int to string, handles INT_MIN</span></div>
+  <div><span class="fs">├── </span><span class="ff">ft_put*_fd.c</span>          <span class="fmm">→  putchar, putstr, putendl, putnbr — all to fd</span></div>
+  <div><span class="fs">│</span></div>
+  <div><span class="fs">└── </span><span class="ff">ft_lst*.c</span>             <span class="fmm">→  bonus: lstnew, lstadd_front/back, lstsize, lstlast,</span></div>
+  <div><span class="fs">                            </span><span class="fmm">   lstdelone, lstclear, lstiter, lstmap</span></div>
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer class="foot">
+  <div class="foot-l">built at 42 by <strong>moelgham</strong><br><span style="font-size:11px;opacity:.55;">the foundation of everything that comes after</span></div>
+  <div class="foot-r">C &nbsp;·&nbsp; static library &nbsp;·&nbsp; no external deps</div>
+</footer>
+
+</div>
+</body>
+</html>
