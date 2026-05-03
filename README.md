@@ -139,4 +139,4 @@ gcc your_file.c -L. -lft -o your_program
 
 ## score
 
-125 / 100
+100 / 100
